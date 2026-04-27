@@ -33,7 +33,10 @@ function loadIndex() {
         brand: s.brand_name,
         city: s.city,
         state: formatStateName(s.state),
-        status: s.status
+        status: s.status,
+        // Fallbacks for missing CSV fields
+        address: s.city ? `${s.city}, ${formatStateName(s.state)}` : "Address not available",
+        type: "Retail Store" 
       },
       geometry: {
         type: "Point",
@@ -43,7 +46,8 @@ function loadIndex() {
 
     index = new Supercluster({
       radius: 60,
-      maxZoom: 16
+      maxZoom: 18, // Increased maxZoom for better street-level detail
+      extent: 256
     });
     index.load(allPoints);
     console.log(`✅ Spatial Index built with ${allPoints.length} points`);
@@ -62,7 +66,7 @@ app.get("/stores", (req, res) => {
     const neLngNum = parseFloat(neLng);
     const swLatNum = parseFloat(swLat);
     const swLngNum = parseFloat(swLng);
-    const zoomNum = parseInt(zoom) || 4;
+    const zoomNum = Math.floor(parseFloat(zoom)) || 4;
 
     if (!index) return res.status(503).json({ error: "Initializing index..." });
 
@@ -117,7 +121,9 @@ app.get("/stores", (req, res) => {
           brand: s.brand_name,
           city: s.city,
           state: formatStateName(s.state),
-          status: s.status
+          status: s.status,
+          address: `${s.city}, ${formatStateName(s.state)}`,
+          type: "Retail Store"
         },
         geometry: {
           type: "Point",
@@ -127,7 +133,7 @@ app.get("/stores", (req, res) => {
 
       // Only cluster if there are many points
       if (filteredPoints.length > 500 && zoomNum < 14) {
-        const tempIndex = new Supercluster({ radius: 60, maxZoom: 16 });
+        const tempIndex = new Supercluster({ radius: 60, maxZoom: 18 });
         tempIndex.load(filteredPoints);
         return res.json(tempIndex.getClusters([swLngNum, swLatNum, neLngNum, neLatNum], zoomNum));
       }
@@ -135,8 +141,9 @@ app.get("/stores", (req, res) => {
     }
 
     // Default: Use pre-built global index for speed
+    // Use the bounds with a small buffer to ensure markers on edges are loaded
     const clusters = index.getClusters(
-      [swLngNum, swLatNum, neLngNum, neLatNum],
+      [swLngNum - 0.01, swLatNum - 0.01, neLngNum + 0.01, neLatNum + 0.01],
       zoomNum
     );
 

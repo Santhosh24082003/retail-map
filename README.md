@@ -1,7 +1,7 @@
 # Interactive US Retail Locations Map
 
 ## Overview
-A performant, interactive map visualizing 150k+ US retail store locations. Built with React, Google Maps, and Node.js. It features a robust 3-tier zooming experience, seamlessly clustering data for optimal browser performance.
+A performant, interactive map visualizing 150k+ US retail store locations. Built with React, Google Maps, and Node.js. 
 
 ## Demo Walkthrough
 *Note: A 2-4 minute screen recording link should be pasted here during final submission.*

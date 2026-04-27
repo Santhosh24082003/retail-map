@@ -68,8 +68,11 @@ export default function MapView() {
     const sw = bounds.getSouthWest();
     const zoom = mapRef.getZoom();
 
+    // Cache key logic - adjust precision based on zoom
+    // Higher zoom needs higher precision for cache keys to avoid stale results while panning
+    const precision = zoom > 14 ? 4 : (zoom > 10 ? 2 : 1);
     const roundTo = (num, decimals) => Number(Math.round(num + "e" + decimals) + "e-" + decimals);
-    const cacheKey = `${roundTo(ne.lat(), 1)}_${roundTo(ne.lng(), 1)}_${roundTo(sw.lat(), 1)}_${roundTo(sw.lng(), 1)}_${zoom}`;
+    const cacheKey = `${roundTo(ne.lat(), precision)}_${roundTo(ne.lng(), precision)}_${roundTo(sw.lat(), precision)}_${roundTo(sw.lng(), precision)}_${Math.floor(zoom)}`;
 
     if (cacheRef.current[cacheKey]) {
       setData(cacheRef.current[cacheKey]);
@@ -108,6 +111,7 @@ export default function MapView() {
       <div className="map-overlay-title">
         <h1>US Retail Explorer</h1>
         <p>Interactive Map of 150k+ Locations</p>
+        {loading && <span className="loading-indicator">Updating...</span>}
       </div>
       
       <GoogleMap
@@ -121,7 +125,7 @@ export default function MapView() {
       >
         {data.map((item, i) => {
           const [lng, lat] = item.geometry.coordinates;
-          const { cluster, point_count, isState, label, brand, storeId } = item.properties;
+          const { cluster, point_count, isState, label, brand, storeId, address, type } = item.properties;
 
           let iconUrl = "";
           let zIndex = 1;
@@ -134,6 +138,7 @@ export default function MapView() {
             iconUrl = createSvgMarker(countStr, "cluster");
             zIndex = 20;
           } else {
+            // Tier 3: Individual Store Marker
             iconUrl = createSvgMarker(brand ? brand.substring(0, 2).toUpperCase() : "S", "store");
             zIndex = 30;
           }
@@ -175,13 +180,14 @@ export default function MapView() {
           >
             <div className="info-window-content">
               <h3>{selectedStore.properties.brand || "Retail Store"}</h3>
-              {selectedStore.properties.city && <p><strong>City:</strong> {selectedStore.properties.city}</p>}
-              {selectedStore.properties.state && <p><strong>State:</strong> {selectedStore.properties.state}</p>}
-              <p>
-                <span className={`status-badge ${(selectedStore.properties.status || "").toLowerCase()}`}>
+              <div className="info-grid">
+                <p><strong>Address:</strong> {selectedStore.properties.address || "N/A"}</p>
+                <p><strong>Status:</strong> <span className={`status-badge ${(selectedStore.properties.status || "").toLowerCase()}`}>
                   {selectedStore.properties.status || "Unknown"}
-                </span>
-              </p>
+                </span></p>
+                <p><strong>Type:</strong> {selectedStore.properties.type || "Retail"}</p>
+                <p><strong>Location:</strong> {selectedStore.properties.city}, {selectedStore.properties.state}</p>
+              </div>
             </div>
           </InfoWindow>
         )}
