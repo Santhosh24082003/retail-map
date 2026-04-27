@@ -1,0 +1,132 @@
+:root {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242f3e;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Map Wrapper */
+.map-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Glassmorphism Title */
+.map-overlay-title {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  background: rgba(36, 47, 62, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  color: #fff;
+  pointer-events: none;
+  animation: fade-in 0.8s ease-out;
+}
+
+.map-overlay-title h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.map-overlay-title p {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+/* Info Window */
+.info-window-content {
+  color: #1f2937;
+  padding: 8px;
+  min-width: 200px;
+}
+
+.info-window-content h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.info-window-content p {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+.info-window-content strong {
+  color: #111827;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+}
+
+.status-badge.active {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.closed {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge.planned {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.loading-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #242f3e;
+  color: #60a5fa;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
